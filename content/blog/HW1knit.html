@@ -1,0 +1,293 @@
+---
+title: "Data Wrangling and Visualization with Snowshoe Hares/Principal Components Analysis (PCA)"
+author: "Nathaniel Burola"
+date: "3/4/2020"
+output: html_document
+banner: "img/banners/snowshoe.png"
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<div id="data-wrangling-and-visualization-with-snowshoe-hares-lepus-americanus" class="section level2">
+<h2>Data wrangling and visualization with snowshoe hares (Lepus americanus)</h2>
+<p>This section of the project concerns data wrangling and data visualization with populations of snowshoe hares (Lepus americanus) in Bonanza Creek, Alaska. The study concerns 5 locales in Tanana Valley in central Alaska from study sites Tok in the east to Clear in the west from 1999-2012 with a time horizon of 13 years.</p>
+<div id="attaching-all-relevant-packages" class="section level3">
+<h3>Attaching all relevant packages</h3>
+<pre class="r"><code>library(tidyverse)
+library(janitor)
+library(here)
+library(kableExtra)
+library(naniar)
+library(skimr)
+library(ggfortify)
+library(tmap)
+library(ggplot2)
+library(hrbrthemes)
+library(qwraps2)
+library(magrittr)
+library(factoextra)</code></pre>
+</div>
+<div id="reading-in-the-data-to-form-a-new-dataframe" class="section level3">
+<h3>Reading in the data to form a new dataframe</h3>
+<pre class="r"><code>snowshoe &lt;- read_csv(&quot;showshoe_lter.csv&quot;)</code></pre>
+</div>
+<div id="data-exploring-and-wrangling" class="section level3">
+<h3>Data exploring and wrangling</h3>
+<pre class="r"><code>summary(snowshoe) #Gives a summary of how many different variables there are in the dataframe
+View(snowshoe) #Opens a new dataframe with the dataset already in it 
+names(snowshoe) #Gives the number of column headers in the data set 
+head(snowshoe) #Gives a preview of the data set 
+tail(snowshoe) #Gives a preview of the data set 
+
+#Initial reaction: Columns that include NA data are the following: time, right ear, sex, age, hindfoot, and notes. 
+
+#What variables may be related to each other with this data? Could include sex, age, and weight. Maybe grid and date? 
+
+#What do you want to graph with the snowshoe data? 
+
+#Statement: I want to see how the weight of all the snowshoe hares both female and male will vary across the years of the study </code></pre>
+</div>
+<div id="filtering-and-constructing-a-new-dataframe-with-desired-variables" class="section level3">
+<h3>Filtering and constructing a new dataframe with desired variables</h3>
+<pre class="r"><code>snowfiltered = subset(snowshoe, select = -c(time, grid, trap, l_ear, r_ear, hindft, notes, b_key, session_id, study)) #Filtered out all the columns that are not desired in the new dataframe 
+
+#Transforming all of the classes of the variables from character to numeric </code></pre>
+</div>
+<div id="filtering-the-dataset" class="section level3">
+<h3>Filtering the dataset</h3>
+<pre class="r"><code>#Filtering the dataset in order to get lower case letters for male and females and filtering out the rest of the NA values 
+snow_tidy &lt;- snowfiltered %&gt;%  
+  filter(sex %in% c (&quot;f&quot;, &quot;m&quot;, &quot;M&quot;, &quot;F&quot;)) %&gt;%  
+  mutate(
+    sex = case_when(
+      sex == &quot;f&quot; ~ &quot;F&quot;, 
+      sex == &quot;m&quot; ~ &quot;M&quot;)) %&gt;%  
+  filter(sex!= &quot;NA&quot;)</code></pre>
+</div>
+<div id="descriptive-introductory-summary-of-what-the-project-is-all-about-3-4-sentences" class="section level3">
+<h3>Descriptive introductory summary of what the project is all about (3-4 sentences)</h3>
+<pre class="r"><code>#Snowshore hares, otherwise known as Lepus americanus, are a keystone prey species that play an ecologically important role in northern boreal forests and experience population fluctuations of 8-11 years. This capture-recapture study of snowshoe hares was conducted at 5 locales in the Tanana valley from study sites Tok in the east to Clear in the west from 1999-2012 with a time duration of 13 years. Snowshoe hare population densities were the highest in 1999 and declined thereafter. This study did not find any declines in apparent survival during declining densities in these study populations. </code></pre>
+</div>
+<div id="finalized-graph-about-the-bonanza-creek-snowshoe-hare-population" class="section level3">
+<h3>Finalized graph about the Bonanza Creek snowshoe hare population</h3>
+<pre class="r"><code>#Creating a histogram based on the weight of the snowshore hares with a frequency count of the data split between by sex (male/female)
+snow_plot &lt;- ggplot(snow_tidy, aes(x=weight, color=sex, fill=sex)) +
+  geom_histogram(position=&quot;identity&quot;, alpha=0.5, brewerPalette=&quot;Paired&quot;,alpha=0.5) + 
+  labs(title=&quot;Weight Distribution of Female and Male Snowshoe Hares from 1999 - 2012&quot;,x=&quot;Weight (g)&quot;, y = &quot;Frequency Count of Snowshoe Hares&quot;, caption = &quot;Weight distribution of male and female snowshoe hares (Lepus americanus) \n in Bonanza Creek Experimental Forest (1999-2012) \n (Source: Knut, Kielland, et al. “ Snowshoe Hare Physical Data in Bonanza Creek Experimental Forest: 1999-2012.” Bonanza Creek Experimental Forest, 10 Feb. 2017.&quot;) + 
+  theme_bw()
+
+snow_plot+theme(plot.caption=element_text(hjust=0.5))</code></pre>
+<p><img src="/blog/HW1knit_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
+<p>There is a wide range of weights associated with either gender of the snowshoe hare population in Bonanza Creek from 1999-2012. However, there are noticeable differences between male and female snowshoe hares. It would seem that overall there were more male snowshoe hares that weighed in the 1,100 - 1,400 gram range than compared to female snowshoe hares.</p>
+</div>
+<div id="creating-a-new-data-frame-with-desirable-traits" class="section level3">
+<h3>Creating a new data frame with desirable traits</h3>
+<pre class="r"><code>#Creating a new data frame to include variables that cannot be analyzed in the numeric class 
+snowtable = subset(snowshoe, select = -c(time, grid, trap, l_ear, session_id, study, notes, b_key, age, r_ear, hindft)) 
+
+#Renaming columns in the dataframe to be capitalized 
+names(snowtable)[names(snowtable) == &quot;sex&quot;] &lt;- &quot;Sex&quot;
+names(snowtable)[names(snowtable) == &quot;date&quot;] &lt;- &quot;Year of Study&quot;
+names(snowtable)[names(snowtable) == &quot;weight&quot;] &lt;- &quot;Weight of Hare (g)&quot;
+
+
+#Filtering out the NA values for the new data frame to only get male and female 
+snow_analysis &lt;- snowtable %&gt;%  
+  filter(Sex %in% c (&quot;f&quot;, &quot;m&quot;, &quot;M&quot;, &quot;F&quot;)) %&gt;%  
+  mutate(
+    Sex = case_when(
+      Sex == &quot;f&quot; ~ &quot;F&quot;, 
+      Sex == &quot;m&quot; ~ &quot;M&quot;)) %&gt;%  
+  filter(Sex!= &quot;NA&quot;)
+
+#Filtering out female snowshow hares to only get the males for data analysis results  
+snow_male &lt;- snow_analysis %&gt;%  
+ filter(Sex!= &quot;F&quot;)
+
+snow_male
+
+#Filtering out male snowshow hares to only get the females for data analysis results 
+snow_female &lt;- snow_analysis %&gt;%  
+ filter(Sex!= &quot;M&quot;)
+
+snow_female</code></pre>
+</div>
+<div id="testing-out-various-statistical-analyses" class="section level3">
+<h3>Testing out various statistical analyses</h3>
+<pre class="r"><code>#Calculating Descriptive Statistics of the Weight of Female Snowshoe Hares 
+mean(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#1289.994
+median(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#1350 
+sd(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#325.08004 
+min(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#240 
+max(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#2170 
+range(snow_female$`Weight of Hare (g)`, na.rm = TRUE)
+#1930 </code></pre>
+</div>
+<div id="creating-the-finalized-html-table" class="section level3">
+<h3>Creating the finalized HTML table</h3>
+<pre class="r"><code>snow_tbl &lt;- data.frame(
+  Statistics = c(&quot;Mean&quot;, &quot;Median&quot;, &quot;Standard Deviation&quot;, &quot;Minimum&quot;, &quot;Maximum&quot;, &quot;Range&quot;),
+  Calculations = c(
+    &quot;1,290 &quot;,
+    &quot;1,350&quot;, 
+    &quot;325 &quot;, 
+    &quot;240&quot;, 
+    &quot;2,170&quot;, 
+    &quot;1,930&quot;
+  )
+)
+
+kable(snow_tbl, caption = &#39;&lt;b&gt;Female Snowshoe Hare Weight Descriptive Statistics&lt;/b&gt;&#39;) %&gt;%
+  kable_styling(full_width = F) %&gt;% 
+  column_spec(1, bold = T, border_right = T) %&gt;%
+  column_spec(2, width = &quot;30em&quot;, background = &quot;white&quot;) %&gt;%  
+  footnote(general = &quot;Descriptive statistics which calculate the mean to range of weights for all female snowshoe hare populations in Bonanza Creek Experimental Forest (1999-2012)&quot;)   </code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-11">Table 1: </span><b>Female Snowshoe Hare Weight Descriptive Statistics</b>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Statistics
+</th>
+<th style="text-align:left;">
+Calculations
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Mean
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+1,290
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Median
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+1,350
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Standard Deviation
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+325
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Minimum
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+240
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Maximum
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+2,170
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-right:1px solid;">
+Range
+</td>
+<td style="text-align:left;width: 30em; background-color: white !important;">
+1,930
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<sup></sup> Descriptive statistics which calculate the mean to range of weights for all female snowshoe hare populations in Bonanza Creek Experimental Forest (1999-2012)
+</td>
+</tr>
+</tfoot>
+</table>
+<p>According to the data, female snowshoe hare populations from 1999-2012 in Bonanza Creek have a mean weight of 1,290 grams and a median weight of 1,350 grams. The lightest female snowshoe hare weighed 240 grams while the heaviest female snowshoe hare weighed 2,170 grams. Taking into account the entire female population, there was a range of 1,930 grams from the lightest to the heaviest female snowshoe hare. The standard deviation of the female snowshoe population was 325 grams in relation to the mean weight of 1,290 grams.</p>
+</div>
+</div>
+<div id="principal-components-analysis-pca" class="section level2">
+<h2>Principal components analysis (PCA)</h2>
+<p>This section of the project concerns principal components analysis (PCA) which is a statistical analysis conducted in R designed to understand the relationships between variables. The dataset used in this project comes from the United States Department of Agriculture (USDA) and concerns information about nutrients towards a variety of vegetables and fruits.</p>
+<div id="reading-in-the-dataset" class="section level3">
+<h3>Reading in the dataset</h3>
+<pre class="r"><code>nutrients &lt;- read_csv(&quot;usda_nutrients.csv&quot;)</code></pre>
+</div>
+<div id="doing-some-data-wrangling-to-clean-up-and-filter-the-data" class="section level3">
+<h3>Doing some data wrangling to clean up and filter the data</h3>
+<pre class="r"><code>#Filtered the dataset through food group in onder to have vegetables and vegetable products as well as fruits and fruit juices 
+
+#Retaining observations where the ShortDescrip column would contain the word &quot;RAW&quot; 
+usda &lt;- nutrients %&gt;% 
+  filter(FoodGroup  == &quot;Vegetables and Vegetable Products&quot; |
+           FoodGroup == &quot;Fruits and Fruit Juices&quot;) %&gt;%
+  filter(str_detect(ShortDescrip, pattern=&quot;RAW&quot;))</code></pre>
+</div>
+<div id="useful-descrptive-summary-3-4-lines" class="section level3">
+<h3>Useful descrptive summary (3-4 lines)</h3>
+<pre class="r"><code>#What humans eat in terms of their food supply and the scientiifc understanding of relationships between dietary intakes and health have evolved over time. As the United States Department of Agriculture (USDA), this organizations is responsible for maintaining food composition data resources that can meet the needs of diverse users from researchers to health professionals. There is a need for transparent and easily accessible  information about nutrients and a new approach to presenting food profile information as the food industry changes over time. This dataset, titled FoodData Central, presents food profile information in a scientifically rigorous way (Source: FoodData Central . “FoodData Central .” FoodData Central, 2020, fdc.nal.usda.gov/about-us.html.) </code></pre>
+</div>
+<div id="creating-the-summary-table-for-the-pca-analysis" class="section level3">
+<h3>Creating the summary table for the PCA analysis</h3>
+<pre><code>## Importance of components:
+##                           PC1    PC2     PC3    PC4     PC5     PC6     PC7
+## Standard deviation     2.3112 1.5885 1.37202 1.3349 1.14690 1.04587 1.01824
+## Proportion of Variance 0.2428 0.1147 0.08557 0.0810 0.05979 0.04972 0.04713
+## Cumulative Proportion  0.2428 0.3575 0.44306 0.5241 0.58385 0.63357 0.68070
+##                            PC8     PC9    PC10    PC11    PC12    PC13    PC14
+## Standard deviation     0.95692 0.92741 0.89055 0.82930 0.75584 0.70965 0.68029
+## Proportion of Variance 0.04162 0.03909 0.03605 0.03126 0.02597 0.02289 0.02104
+## Cumulative Proportion  0.72232 0.76142 0.79747 0.82873 0.85470 0.87759 0.89862
+##                           PC15    PC16    PC17   PC18    PC19    PC20    PC21
+## Standard deviation     0.63747 0.58068 0.57007 0.5609 0.50314 0.48474 0.44798
+## Proportion of Variance 0.01847 0.01533 0.01477 0.0143 0.01151 0.01068 0.00912
+## Cumulative Proportion  0.91709 0.93242 0.94719 0.9615 0.97300 0.98368 0.99280
+##                          PC22
+## Standard deviation     0.3980
+## Proportion of Variance 0.0072
+## Cumulative Proportion  1.0000</code></pre>
+</div>
+<div id="creating-the-finalized-pca-plot" class="section level3">
+<h3>Creating the finalized PCA plot</h3>
+<pre class="r"><code>usda_bilplot &lt;- autoplot(usda_pca, 
+                       colour = NA, 
+                       loadings.label = TRUE, 
+                       loadings.label.size = 3, 
+                       loadings.label.colour = &quot;black&quot;, 
+                       loadings.label.repel = TRUE) + 
+   labs(title = &quot;PCA Biplot: Fruit and Vegetable Nutrient Levels&quot;,
+       x = &quot;PC1 representing 24.80% of variance&quot;,
+       y = &quot;PC2 representing 11.47% of variance&quot;,
+       caption = &quot;PCA biplot representing fruit and vegetable nutrient levels \n including variables from protein (g) to zinc levels \n (Source: Food Data Central .“FoodData Central .” FoodData Central, 2020, fdc.nal.usda.gov/about-us.html.&quot;) + 
+  theme_bw()
+
+usda_bilplot + theme(plot.caption=element_text(hjust=0.5)) + theme(plot.title=element_text(hjust = 0.5))</code></pre>
+<p><img src="/blog/HW1knit_files/figure-html/PCA,%20biplot-1.png" width="672" /></p>
+<p>The PCA biplot can be interpreted in multiple trends:</p>
+<p>Postive Trend: In terms of postive correlation, Riboflavin and Niacin are postively correlated with one another on account of the length and overlap of their biplot lines. Magnesium and Thiamin are postively correlated with each other as well as Iron and Folate. Sugar and Carbs are postively correlated with one another since they are still in close proximity to one another with their biplot lines.</p>
+<p>Negative Trend: In terms of negative correlation, Sugar and Protein are negatively correlated due to the 180 degree difference between biplot lines earning a correlation of -1. Sugar and Selenium also appear to be negatively correlated as well.</p>
+<p>Neutral Trend: In terms of minimal or no correlation, Sugar and Manganese are minimally correlated with one another due to the 90 degree difference of their biplot lines. Sugar and Fat have minimal or no correlation at all since there is a 270 degree difference between the two biplot lines.</p>
+</div>
+</div>
