@@ -1,0 +1,13 @@
+---
+title: "ESM 244: Blogdown Website"
+author: "Nathaniel Burola"
+date: 03-03-2020
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+

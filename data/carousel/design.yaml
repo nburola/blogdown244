@@ -1,0 +1,10 @@
+weight: 3
+title: "Data Analysis Assignments"
+description: >
+  <ul class="list-style-none">
+    <li>Data Visualizations</li>
+    <li>Time Series Graphs</li>
+    <li>Maps</li>
+    <li>Bar Graphs</li>
+  </ul>
+image: "img/carousel/hawaii.JPG"
