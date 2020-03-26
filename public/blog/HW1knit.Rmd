@@ -1,7 +1,7 @@
 ---
 title: "Data Wrangling and Visualization with Snowshoe Hares/Principal Components Analysis (PCA)"
 author: "Nathaniel Burola"
-date: "3/4/2020"
+date: "2020-03-04T13:47:08+02:00"
 output: html_document
 banner: "img/banners/snowshoe.png"
 ---
@@ -50,7 +50,7 @@ local({
 ```
 
 ## Data wrangling and visualization with snowshoe hares (Lepus americanus)
-This section of the project concerns data wrangling and data visualization with populations of snowshoe hares (Lepus americanus) in Bonanza Creek, Alaska. The study concerns 5 locales in Tanana Valley in central Alaska from study sites Tok in the east to Clear in the west from 1999-2012 with a time horizon of 13 years. 
+Snowshore hares, otherwise known as Lepus americanus, are a keystone prey species that play an ecologically important role in northern boreal forests and experience population fluctuations of 8-11 years. This capture-recapture study of snowshoe hares was conducted at 5 locales in the Tanana valley from study sites Tok in the east to Clear in the west from 1999-2012 with a time duration of 13 years. Snowshoe hare population densities were the highest in 1999 and declined thereafter. This study did not find any declines in apparent survival during declining densities in these study populations.
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, include = FALSE}
 r = getOption("repos")
 r["CRAN"] = "http://cran.us.r-project.org"
@@ -221,7 +221,7 @@ kable(snow_tbl, caption = '<b>Female Snowshoe Hare Weight Descriptive Statistics
 According to the data, female snowshoe hare populations from 1999-2012 in Bonanza Creek have a mean weight of 1,290 grams and a median weight of 1,350 grams. The lightest female snowshoe hare weighed 240 grams while the heaviest female snowshoe hare weighed 2,170 grams. Taking into account the entire female population, there was a range of 1,930 grams from the lightest to the heaviest female snowshoe hare. The standard deviation of the female snowshoe population was 325 grams in relation to the mean weight of 1,290 grams. 
 
 ## Principal components analysis (PCA)
-This section of the project concerns principal components analysis (PCA) which is a statistical analysis conducted in R designed to understand the relationships between variables. The dataset used in this project comes from the United States Department of Agriculture (USDA) and concerns information about nutrients towards a variety of vegetables and fruits. 
+What humans eat in terms of their food supply and the scientiifc understanding of relationships between dietary intakes and health have evolved over time. As the United States Department of Agriculture (USDA), this organizations is responsible for maintaining food composition data resources that can meet the needs of diverse users from researchers to health professionals. There is a need for transparent and easily accessible  information about nutrients and a new approach to presenting food profile information as the food industry changes over time. This dataset, titled FoodData Central, presents food profile information in a scientifically rigorous way (Source: FoodData Central . “FoodData Central .” FoodData Central, 2020, fdc.nal.usda.gov/about-us.html.)
 
 ### Reading in the dataset 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
