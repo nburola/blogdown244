@@ -1,7 +1,7 @@
 ---
 title: "Data Wrangling and Visualization with Snowshoe Hares/Principal Components Analysis (PCA)"
 author: "Nathaniel Burola"
-date: "3/4/2020"
+date: "2020-03-04T13:47:08+02:00"
 output: html_document
 banner: "img/banners/snowshoe.png"
 ---
@@ -11,7 +11,7 @@ banner: "img/banners/snowshoe.png"
 
 <div id="data-wrangling-and-visualization-with-snowshoe-hares-lepus-americanus" class="section level2">
 <h2>Data wrangling and visualization with snowshoe hares (Lepus americanus)</h2>
-<p>This section of the project concerns data wrangling and data visualization with populations of snowshoe hares (Lepus americanus) in Bonanza Creek, Alaska. The study concerns 5 locales in Tanana Valley in central Alaska from study sites Tok in the east to Clear in the west from 1999-2012 with a time horizon of 13 years.</p>
+<p>Snowshore hares, otherwise known as Lepus americanus, are a keystone prey species that play an ecologically important role in northern boreal forests and experience population fluctuations of 8-11 years. This capture-recapture study of snowshoe hares was conducted at 5 locales in the Tanana valley from study sites Tok in the east to Clear in the west from 1999-2012 with a time duration of 13 years. Snowshoe hare population densities were the highest in 1999 and declined thereafter. This study did not find any declines in apparent survival during declining densities in these study populations.</p>
 <div id="attaching-all-relevant-packages" class="section level3">
 <h3>Attaching all relevant packages</h3>
 <pre class="r"><code>library(tidyverse)
@@ -230,7 +230,7 @@ Range
 </div>
 <div id="principal-components-analysis-pca" class="section level2">
 <h2>Principal components analysis (PCA)</h2>
-<p>This section of the project concerns principal components analysis (PCA) which is a statistical analysis conducted in R designed to understand the relationships between variables. The dataset used in this project comes from the United States Department of Agriculture (USDA) and concerns information about nutrients towards a variety of vegetables and fruits.</p>
+<p>What humans eat in terms of their food supply and the scientiifc understanding of relationships between dietary intakes and health have evolved over time. As the United States Department of Agriculture (USDA), this organizations is responsible for maintaining food composition data resources that can meet the needs of diverse users from researchers to health professionals. There is a need for transparent and easily accessible information about nutrients and a new approach to presenting food profile information as the food industry changes over time. This dataset, titled FoodData Central, presents food profile information in a scientifically rigorous way (Source: FoodData Central . “FoodData Central .” FoodData Central, 2020, fdc.nal.usda.gov/about-us.html.)</p>
 <div id="reading-in-the-dataset" class="section level3">
 <h3>Reading in the dataset</h3>
 <pre class="r"><code>nutrients &lt;- read_csv(&quot;usda_nutrients.csv&quot;)</code></pre>

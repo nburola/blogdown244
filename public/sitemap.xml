@@ -4,6 +4,32 @@
   
   <url>
     <loc>/blog/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/2020/03/04/hw3knit/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/2020/03/04/hw1knit/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/2020/03/04/assignment2part3/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/2020/03/04/assignment2part2/</loc>
+    <lastmod>2020-03-04T13:47:08+02:00</lastmod>
   </url>
   
   <url>
@@ -15,35 +41,7 @@
   </url>
   
   <url>
-    <loc>/blog/1/01/01/hw1knit/</loc>
-  </url>
-  
-  <url>
-    <loc>/blog/1/01/01/2015-07-23-r-rmarkdown/</loc>
-  </url>
-  
-  <url>
     <loc>/faq/</loc>
-  </url>
-  
-  <url>
-    <loc>/tags/plot/</loc>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-  </url>
-  
-  <url>
-    <loc>/tags/r-markdown/</loc>
-  </url>
-  
-  <url>
-    <loc>/tags/regression/</loc>
   </url>
   
   <url>
