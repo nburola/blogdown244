@@ -1,0 +1,162 @@
+---
+title: "Time Series Data Wrangling, Exploration, and Visualization"
+author: "Nathaniel Burola"
+date: "2020-03-04T13:47:08+02:00"
+output: html_document
+banner: "img/banners/steelhead.jpg"
+---
+
+
+
+<div id="time-series-data-wrangling-exploration-and-visualization" class="section level2">
+<h2>Time Series Data Wrangling, Exploration, and Visualization</h2>
+<p>This project uses the principles of data wrangling, exploration, and visualization with time series data that concerns the number of adult passage steelhead salmon (Oncorhynchus mykiss) in the Columbia River Basin at Bonneville Dam from the 1st of January to the 31st of December from 1939-2019. The data was collected by the Columbia Basin Research (CBR) research center through the School of Aquatic and Fishery Sciences at the University of Washington under the joint leadership of Research Professor James Anderson and Professor of Biological Statistics John Skalski (Columbia River DART, Columbia Basin Research, University of Washington. (2019).</p>
+<div id="attaching-all-relevant-packages" class="section level3">
+<h3>Attaching all relevant packages</h3>
+<pre class="r"><code>library(tidyverse)
+library(janitor)
+library(lubridate)
+library(here)
+library(paletteer)
+library(tsibble)
+library(fable)
+library(fabletools)
+library(feasts)
+library(forecast)
+library(sf)
+library(tmap)
+library(mapview)
+library(paletteer)
+library(knitr)
+library(scales)
+library(dplyr)</code></pre>
+</div>
+<div id="reading-in-the-data" class="section level3">
+<h3>Reading in the data</h3>
+<pre class="r"><code>salmon &lt;- read_csv(&quot;steelhead.csv&quot;) %&gt;% 
+  clean_names() #Reading in the original observations document and coming up with a data frame 
+
+salmon</code></pre>
+</div>
+<div id="exploring-the-data" class="section level3">
+<h3>Exploring the data</h3>
+<pre class="r"><code>names(salmon) #Names tells you what different variables exist within the entire data set 
+unique(salmon$unit) #Unique tells you what different variables exist within the column 
+unique(salmon$location) #Unique tells you what different variables exist within the column
+unique(salmon$year) #Unique tells me the number of years from 1939 - 2019 </code></pre>
+</div>
+<div id="cleaning-up-the-data" class="section level3">
+<h3>Cleaning up the data</h3>
+<pre class="r"><code>clean_salmon &lt;- salmon %&gt;% 
+  mutate(datatype = str_to_lower(&quot;datatype&quot;)) %&gt;% 
+  mutate(parameter = str_to_lower(&quot;parameter&quot;))
+
+clean_salmon</code></pre>
+</div>
+<div id="useful-descriptive-summary-of-what-is-included-in-the-data-3-4-sentences" class="section level3">
+<h3>Useful descriptive summary of what is included in the data (3-4 sentences)</h3>
+<pre class="r"><code>#This dataset concerns the number of adult passage steelhead salmon (Oncorhynchus mykiss) in the Columbia River Basin at Bonneville Dam from the 1st of January to the 31st of December from 1939 - 2019. The data was collected by the Columbia Basin Research (CBR) research center through the School of Aquatic and Fishery Sciences at the University of Washington under the joint leadership of Research Professor James Anderson and Professor of Biological Statistics John Skalski (Columbia River DART, Columbia Basin Research, University of Washington. (2019). </code></pre>
+</div>
+<div id="finalized-time-series-plot-of-original-observations-for-jan-1st---jan-31st-of-2019" class="section level3">
+<h3>Finalized time series plot of original observations for Jan 1st - Jan 31st of 2019</h3>
+</div>
+<div id="filtering-the-dataset" class="section level3">
+<h3>Filtering the dataset</h3>
+<pre class="r"><code>#Need to filer dataset to only display data for 2019 within the month of January from Jan 1st - Jan 31st 
+
+salmon_filtered &lt;- clean_salmon %&gt;%  
+ filter(year == 2019) 
+
+salmon_filtered &lt;- clean_salmon %&gt;%  
+  filter(month == &quot;Jan&quot;)
+
+view(salmon_filtered)</code></pre>
+</div>
+<div id="creating-a-time-series-plot-of-the-original-observations-from-january-1st---january-31st-2019" class="section level3">
+<h3>Creating a time series plot of the original observations from January 1st - January 31st, 2019</h3>
+<pre class="r"><code>#Creating a time series plot using ggplot 
+steelhead_gg &lt;- ggplot(data = salmon_filtered, aes(x = mm_dd, y = value, group = location)) +
+  geom_line(aes(color = year)) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 30)) + 
+  scale_x_discrete(labels=salmon_filtered$mm_dd)  + 
+  theme(axis.text.x=element_text(angle=90,size = rel(1.0), margin = margin(1, unit = &quot;cm&quot;),vjust =1)) + 
+  labs(x = &quot;January 1st - January 31st 2019 &quot;) + 
+  labs(y = &quot;Frequency of daily counts of adult passage \n steelhead salmon (Oncorhynchus mykiss)&quot;) + 
+  labs(title = &quot;Steelhead salmon (Oncorhynchus mykiss) daily counts \n from Jan 1st - Jan 31st 2019 at Bonneville Dam&quot;) + 
+  labs(caption = &quot;Steelhead salmon (Oncorhynchusmykiss) daily count \n from Jan 1st - Jan 31st 2019 at Bonneville Dam \n (Columbia River DART, Columbia Basin Research, University of Washington. (2019)&quot;) + 
+  theme(legend.position = &quot;none&quot;) + 
+  theme(plot.caption=element_text(hjust=0.5)) + 
+  theme(plot.title=element_text(hjust=0.5))
+
+steelhead_gg</code></pre>
+<p><img src="/blog/Assignment2Part2_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>According to the time series plot, the number of daily counts of adult passage steelhead salmon vary depending on the day in January in the year of 2019. The highest daily count was recorded on January 12th with 19 steelhead where as the lowest daily count was recorded on January 6th and January 20th.</p>
+</div>
+<div id="finalized-seasonplot-of-monthly-passage" class="section level3">
+<h3>Finalized seasonplot of monthly passage</h3>
+</div>
+<div id="reading-in-the-data-1" class="section level3">
+<h3>Reading in the data</h3>
+<pre class="r"><code>salmontotal &lt;- read_csv(&quot;steelheadtotal.csv&quot;)%&gt;%  
+  clean_names() #Reading in a new document that contains the month, year, and total daily counts of the dataset 
+
+salmontotal</code></pre>
+</div>
+<div id="creaing-the-seasonplot-of-monthly-passage-in-2019" class="section level3">
+<h3>Creaing the seasonplot of monthly passage in 2019</h3>
+</div>
+<div id="creating-a-new-data-column-in-an-already-existing-dataset" class="section level3">
+<h3>Creating a new data column in an already existing dataset</h3>
+<pre class="r"><code>#Creating a new data column with the months of 2019 set as factors in order for them to be ordered properly in the graph for ggplot
+salmontotal$Month &lt;- factor(salmontotal$month, levels = c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;))</code></pre>
+</div>
+<div id="creating-the-seasonplot" class="section level3">
+<h3>Creating the seasonplot</h3>
+<pre class="r"><code>#Creating a seasonplot with the total daily counts of the dataset with months on the x axis and total daily counts on the y axis    
+ggplot(data = salmontotal, aes(x = Month, y = total, group = year)) + 
+  geom_line(aes(color = year)) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=45,size = rel(1.0), margin = margin(1, unit = &quot;cm&quot;),vjust =1)) + 
+  labs(x = &quot;January - December 2019 &quot;) + 
+  labs(y = &quot;Frequency of total counts of adult passage \n steelhead salmon (Oncorhynchus mykiss)&quot;) + 
+  labs(title = &quot;Steelhead salmon (Oncorhynchus mykiss) total counts \n from January - December 2019 at Bonneville Dam&quot;) + 
+  labs(caption = &quot;Steelhead salmon (Oncorhynchusmykiss) total count \n from January - December 2019 at Bonneville Dam \n (Columbia River DART, Columbia Basin Research, University of Washington. (2019)&quot;) + 
+  theme(legend.position = &quot;none&quot;) + 
+  theme(plot.caption=element_text(hjust=0.5)) + 
+  theme(plot.title=element_text(hjust=0.5))</code></pre>
+<p><img src="/blog/Assignment2Part2_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>According to the season plot, the number of total counts of steelhead salmon peaks near 30,000 in August 2019. The entire peak area extends on a monthly basis from June - November. It is worth noting that November - May remains relatively the same in terms of total counts of steelhead counts.</p>
+</div>
+<div id="finalized-visualization-of-annual-steelhead-passage-counts" class="section level3">
+<h3>Finalized visualization of annual steelhead passage counts</h3>
+</div>
+<div id="reading-in-the-data-2" class="section level3">
+<h3>Reading in the data</h3>
+<pre class="r"><code>salmonannual &lt;- read_csv(&quot;steelheadannual.csv&quot;) #Reading in a new document that contains total steelhead passage data from 2000-2019  
+
+salmonannual</code></pre>
+</div>
+<div id="creating-the-finalized-visualization-of-the-annual-steelhead-passage-counts-from-2000---2019" class="section level3">
+<h3>Creating the finalized visualization of the annual steelhead passage counts from 2000 - 2019</h3>
+<pre class="r"><code>#Creating the finalized visualization of annual steelhead passage counts with a barplot
+salmon_num &lt;- as.numeric(as.vector(salmonannual$year)) 
+salmon_plot &lt;- ggplot(data = salmonannual, aes(x = salmon_num, y = total_daily_count, color = &quot;blue&quot;, fill=rgb(0.2, 0.3, 0.5))) + 
+  geom_bar(stat=&quot;identity&quot;) + 
+  theme(legend.position=&quot;none&quot;) + 
+  scale_y_continuous(label=comma, limits=c(0, 650000)) + 
+  labs(x = &quot;Years of 2000 - 2019&quot;) + 
+  labs(y = &quot;Frequency of total counts of adult passage \n steelhead salmon (Oncorhynchus mykiss)&quot;) + 
+  labs(title = &quot;Steelhead salmon (Oncorhynchus mykiss) total counts \n from 2000-2019 at Bonneville Dam&quot;) + 
+  labs(caption = &quot;Steelhead salmon (Oncorhynchusmykiss) total count \n from 2000-2019 at Bonneville Dam \n (Columbia River DART, Columbia Basin Research, University of Washington. (2019)&quot;) + 
+  theme(legend.position = &quot;none&quot;) + 
+  theme(plot.caption=element_text(hjust=0.5)) + 
+  theme(plot.title=element_text(hjust=0.5))
+  
+options(scipen=999) #Resetting the y axis scale to avoid scientific notation and place commas on the y axis. 
+
+salmon_plot</code></pre>
+<p><img src="/blog/Assignment2Part2_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>According to the barplot, the number of total counts of adult passage steelhead salmon peaked in 2001 with a grand total of 633,073 counts. There is an interesting cyclical pattern between the years of 2001 - 2009, however, after 2010 the cyclical pattern stops short and instead exhibits a general decreasing trend over time. The lowest year of total counts of adult passage steelhead salmon was in 2019.</p>
+</div>
+</div>
